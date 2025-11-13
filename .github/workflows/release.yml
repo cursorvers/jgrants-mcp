@@ -1,0 +1,51 @@
+name: Release
+on:
+  push:
+    tags: [ 'v*.*.*' ]
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+
+      - name: Login GHCR
+        uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set image meta
+        id: meta
+        run: |
+          echo "IMAGE=${{ vars.GHCR_IMAGE || 'ghcr.io/cursorvers/jgrants-mcp' }}" >> $GITHUB_OUTPUT
+          echo "TAG=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+
+      - name: Build & Push
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.IMAGE }}:${{ steps.meta.outputs.TAG }},${{ steps.meta.outputs.IMAGE }}:latest
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@c85d0e205a72a294fe064f618a87dbac13084086
+
+      - name: Sign image (keyless)
+        env:
+          COSIGN_EXPERIMENTAL: "1"
+        run: |
+          cosign sign --yes ${{ steps.meta.outputs.IMAGE }}:${{ steps.meta.outputs.TAG }}
+          cosign sign --yes ${{ steps.meta.outputs.IMAGE }}:latest

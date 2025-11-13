@@ -1,0 +1,397 @@
+{
+  "schemaVersion": 1,
+  "projectPath": "/Users/masayuki/Dev/jgrans-mcp",
+  "projectRootName": "jgrans-mcp",
+  "graphRenderingMode": "media",
+  "linkDisplayMode": "all",
+  "graphStats": {
+    "totalNodes": 10,
+    "folders": 10,
+    "files": 0,
+    "images": 0,
+    "videos": 0,
+    "audio": 0,
+    "code": 0,
+    "text": 0,
+    "html": 0,
+    "yaml": 0,
+    "json": 0,
+    "other": 0,
+    "totalLines": 0,
+    "maxLines": 0
+  },
+  "directoryTree": {
+    "name": "jgrans-mcp",
+    "type": "directory",
+    "children": [
+      {
+        "name": ".github",
+        "type": "directory",
+        "children": []
+      },
+      {
+        "name": ".kamui",
+        "type": "directory",
+        "children": []
+      },
+      {
+        "name": ".pytest_cache",
+        "type": "directory",
+        "children": []
+      },
+      {
+        "name": ".worktrees",
+        "type": "directory",
+        "children": []
+      },
+      {
+        "name": "docs",
+        "type": "directory",
+        "children": []
+      },
+      {
+        "name": "jgrants_mcp_server",
+        "type": "directory",
+        "children": [
+          {
+            "name": "__pycache__",
+            "type": "directory",
+            "children": []
+          }
+        ]
+      },
+      {
+        "name": "tests",
+        "type": "directory",
+        "children": [
+          {
+            "name": "__pycache__",
+            "type": "directory",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  "graphData": {
+    "nodes": [
+      {
+        "id": "jgrans-mcp",
+        "name": "jgrans-mcp",
+        "path": "jgrans-mcp",
+        "type": "directory",
+        "lines": 0,
+        "val": 14,
+        "color": "#4d515a",
+        "baseColor": "#4ec9b0",
+        "originalColor": "#4ec9b0",
+        "defaultGlow": 0.18,
+        "glowIntensity": 0.18,
+        "highlighted": false,
+        "parentPath": null,
+        "childFileCount": 0,
+        "x": -2.434628120914235,
+        "y": -1.8834141231222286,
+        "z": -0.0505682414978106,
+        "vx": -0.34887060401379916,
+        "vy": -0.2083367520782654,
+        "vz": 0.11416194593166658
+      },
+      {
+        "id": "jgrans-mcp/.github",
+        "name": ".github",
+        "path": "jgrans-mcp/.github",
+        "type": "directory",
+        "lines": 0,
+        "val": 14,
+        "color": "#4d515a",
+        "baseColor": "#4ec9b0",
+        "originalColor": "#4ec9b0",
+        "defaultGlow": 0.18,
+        "glowIntensity": 0.18,
+        "highlighted": false,
+        "parentPath": "jgrans-mcp",
+        "childFileCount": 0,
+        "x": 28.92423297599831,
+        "y": 14.141946254475016,
+        "z": -13.653347628808747,
+        "vx": -0.3050914102863284,
+        "vy": -0.30919621069032327,
+        "vz": 0.12846469139257333
+      },
+      {
+        "id": "jgrans-mcp/.kamui",
+        "name": ".kamui",
+        "path": "jgrans-mcp/.kamui",
+        "type": "directory",
+        "lines": 0,
+        "val": 14,
+        "color": "#4d515a",
+        "baseColor": "#4ec9b0",
+        "originalColor": "#4ec9b0",
+        "defaultGlow": 0.18,
+        "glowIntensity": 0.18,
+        "highlighted": false,
+        "parentPath": "jgrans-mcp",
+        "childFileCount": 0,
+        "x": -23.535725185585655,
+        "y": 12.548373346740485,
+        "z": 26.10402682284217,
+        "vx": -0.4282041659595796,
+        "vy": -0.6962837372389826,
+        "vz": 0.34049183660082444
+      },
+      {
+        "id": "jgrans-mcp/.pytest_cache",
+        "name": ".pytest_cache",
+        "path": "jgrans-mcp/.pytest_cache",
+        "type": "directory",
+        "lines": 0,
+        "val": 14,
+        "color": "#4d515a",
+        "baseColor": "#4ec9b0",
+        "originalColor": "#4ec9b0",
+        "defaultGlow": 0.18,
+        "glowIntensity": 0.18,
+        "highlighted": false,
+        "parentPath": "jgrans-mcp",
+        "childFileCount": 0,
+        "x": -18.106591853568407,
+        "y": -34.04812623692401,
+        "z": -6.447037044099607,
+        "vx": -0.3919177601565745,
+        "vy": -0.28800879839130633,
+        "vz": 0.4900701999193749
+      },
+      {
+        "id": "jgrans-mcp/.worktrees",
+        "name": ".worktrees",
+        "path": "jgrans-mcp/.worktrees",
+        "type": "directory",
+        "lines": 0,
+        "val": 14,
+        "color": "#4d515a",
+        "baseColor": "#4ec9b0",
+        "originalColor": "#4ec9b0",
+        "defaultGlow": 0.18,
+        "glowIntensity": 0.18,
+        "highlighted": false,
+        "parentPath": "jgrans-mcp",
+        "childFileCount": 0,
+        "x": 11.470445319515788,
+        "y": 29.95894327679112,
+        "z": 14.487983298658367,
+        "vx": -0.45819479931242424,
+        "vy": -0.3562235811475147,
+        "vz": 0.23223603145104382
+      },
+      {
+        "id": "jgrans-mcp/docs",
+        "name": "docs",
+        "path": "jgrans-mcp/docs",
+        "type": "directory",
+        "lines": 0,
+        "val": 14,
+        "color": "#4d515a",
+        "baseColor": "#4ec9b0",
+        "originalColor": "#4ec9b0",
+        "defaultGlow": 0.18,
+        "glowIntensity": 0.18,
+        "highlighted": false,
+        "parentPath": "jgrans-mcp",
+        "childFileCount": 0,
+        "x": 18.578471697314253,
+        "y": -18.712177815462223,
+        "z": -25.68615220486839,
+        "vx": -0.45166398379467027,
+        "vy": -0.49798821836424717,
+        "vz": 0.239878601285875
+      },
+      {
+        "id": "jgrans-mcp/jgrants_mcp_server",
+        "name": "jgrants_mcp_server",
+        "path": "jgrans-mcp/jgrants_mcp_server",
+        "type": "directory",
+        "lines": 0,
+        "val": 14,
+        "color": "#4d515a",
+        "baseColor": "#4ec9b0",
+        "originalColor": "#4ec9b0",
+        "defaultGlow": 0.18,
+        "glowIntensity": 0.18,
+        "highlighted": false,
+        "parentPath": "jgrans-mcp",
+        "childFileCount": 0,
+        "x": -31.949575674704253,
+        "y": 19.75461276384478,
+        "z": -30.712382948494813,
+        "vx": -0.20038572374516508,
+        "vy": -0.19875269876037976,
+        "vz": 0.04159497548911449
+      },
+      {
+        "id": "jgrans-mcp/jgrants_mcp_server/__pycache__",
+        "name": "__pycache__",
+        "path": "jgrans-mcp/jgrants_mcp_server/__pycache__",
+        "type": "directory",
+        "lines": 0,
+        "val": 14,
+        "color": "#4d515a",
+        "baseColor": "#4ec9b0",
+        "originalColor": "#4ec9b0",
+        "defaultGlow": 0.18,
+        "glowIntensity": 0.18,
+        "highlighted": false,
+        "parentPath": "jgrans-mcp/jgrants_mcp_server",
+        "childFileCount": 0,
+        "x": -53.333141334498904,
+        "y": 36.097897740726914,
+        "z": -52.09555024755978,
+        "vx": -0.09688884558738807,
+        "vy": -0.1153534247669109,
+        "vz": -0.12474132652903855
+      },
+      {
+        "id": "jgrans-mcp/tests",
+        "name": "tests",
+        "path": "jgrans-mcp/tests",
+        "type": "directory",
+        "lines": 0,
+        "val": 14,
+        "color": "#4d515a",
+        "baseColor": "#4ec9b0",
+        "originalColor": "#4ec9b0",
+        "defaultGlow": 0.18,
+        "glowIntensity": 0.18,
+        "highlighted": false,
+        "parentPath": "jgrans-mcp",
+        "childFileCount": 0,
+        "x": 23.27288784455789,
+        "y": -23.5907953231882,
+        "z": 33.396429272169456,
+        "vx": -0.2533337723838852,
+        "vy": -0.25378894882872244,
+        "vz": 0.12630593644167648
+      },
+      {
+        "id": "jgrans-mcp/tests/__pycache__",
+        "name": "__pycache__",
+        "path": "jgrans-mcp/tests/__pycache__",
+        "type": "directory",
+        "lines": 0,
+        "val": 14,
+        "color": "#4d515a",
+        "baseColor": "#4ec9b0",
+        "originalColor": "#4ec9b0",
+        "defaultGlow": 0.18,
+        "glowIntensity": 0.18,
+        "highlighted": false,
+        "parentPath": "jgrans-mcp/tests",
+        "childFileCount": 0,
+        "x": 44.02877702759038,
+        "y": -37.55531988405551,
+        "z": 56.347494248800686,
+        "vx": -0.15029623905501033,
+        "vy": -0.3641276299072051,
+        "vz": 0.10243243515841643
+      }
+    ],
+    "links": [
+      {
+        "source": "jgrans-mcp",
+        "target": "jgrans-mcp/.github",
+        "type": "tree"
+      },
+      {
+        "source": "jgrans-mcp",
+        "target": "jgrans-mcp/.kamui",
+        "type": "tree"
+      },
+      {
+        "source": "jgrans-mcp",
+        "target": "jgrans-mcp/.pytest_cache",
+        "type": "tree"
+      },
+      {
+        "source": "jgrans-mcp",
+        "target": "jgrans-mcp/.worktrees",
+        "type": "tree"
+      },
+      {
+        "source": "jgrans-mcp",
+        "target": "jgrans-mcp/docs",
+        "type": "tree"
+      },
+      {
+        "source": "jgrans-mcp",
+        "target": "jgrans-mcp/jgrants_mcp_server",
+        "type": "tree"
+      },
+      {
+        "source": "jgrans-mcp/jgrants_mcp_server",
+        "target": "jgrans-mcp/jgrants_mcp_server/__pycache__",
+        "type": "tree"
+      },
+      {
+        "source": "jgrans-mcp",
+        "target": "jgrans-mcp/tests",
+        "type": "tree"
+      },
+      {
+        "source": "jgrans-mcp/tests",
+        "target": "jgrans-mcp/tests/__pycache__",
+        "type": "tree"
+      }
+    ]
+  },
+  "trackedFiles": [],
+  "uiState": {
+    "expandedDirs": [
+      "jgrans-mcp"
+    ],
+    "selectedPath": null
+  },
+  "directoryTreeMeta": {
+    "mode": "full",
+    "maxDepthApplied": 10,
+    "maxEntriesPerDirectory": 0,
+    "isPartial": false
+  },
+  "gitHistoryMeta": {
+    "mode": "full",
+    "isPartial": false,
+    "branchPulse": null
+  },
+  "gitHistoryState": {
+    "selectedTimelineIndex": 1,
+    "activeCommitHash": null,
+    "entries": [
+      {
+        "type": "live",
+        "label": "現在のコードベース",
+        "files": [],
+        "branch": "main",
+        "targetCommitHash": "0000000000000000000000000000000000000000",
+        "worktreePath": "/Users/masayuki/Dev/jgrans-mcp",
+        "timestamp": 1762997037961,
+        "lane": 0,
+        "branchLabel": "main",
+        "branchTags": [
+          "main"
+        ],
+        "isDefaultWorktree": true,
+        "branchColor": "#4f85e8",
+        "index": 0
+      },
+      {
+        "type": "empty",
+        "label": "初期状態 (初回コミット以前)",
+        "files": [],
+        "marker": "pre-history",
+        "index": 1
+      }
+    ]
+  },
+  "projectRoot": "/Users/masayuki/Dev/jgrans-mcp",
+  "savedAt": 1762997039581
+}

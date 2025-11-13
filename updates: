@@ -1,0 +1,52 @@
+��  - pac��    directory: "/"
+  ��、**A    schedule:
+ ジ�      interv��    open-pull-requests-�*  - package-ecosystem: "github�*    directory: "/"
+    schedule:
+     �    schedule:
+   *�      interv��```
+
+> Actions自体の��**キャッシュ** など GitHub公式ドキュメントです。必要箇所は上記に都度リンクしています。([GitHub Docs][2])
+
+---
+
+**補足（MCPサーバの仕�permis��  contents: J  packages: wriP   id-token: write        # cosign keylessを使うjob��```
+
+> **GITHUB_TOKEN** はworkflow/job単位で権限を最偟>��([GitHub][1])
+
+必要なら、この要件定義を **チェックリスト化**（Notion/GitHub Projects）や **Terraform/gh CLIでのポリシー自動適用**にも落とし込みます。
+
+[1]: https://github.com/digital-go-jp/jgrants-mcp-server "GitHub - digital-go-jp/jgrants-mcp-server"
+[2]: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actio[2]: httngs-for-a-repository?utm_source=chatgpt.com "Managing GitHub Actions settings for a repository"
+[3]: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features?utm_source=chatgpt.com "Managing your repository's settings and features"
+[4]: https://github.com/actions/setup-python?utm_source=chatgpt.com "actions/setup-python: Set up your ..."
+[5]: https://github.com/actions/cache?utm_source=chatgpt.com "Cache dependencies and build outputs in GitHub Actions"
+[6]: https://docs.github.com/actions/guides/publishing-docker-images?utm_source=chatgpt.com "Publishing Docker images"
+[7]: https://github.com/sigstore/cosign-installer?utm_source=chatgpt.com "sigstore/cosign-installer: Cosign Github Action"
+[8]: https://github.com/github/codeql-action?utm_source=chatgpt.com "Actions for running CodeQL analysis"
+[9]: https://github.com/actions/dependency-review-action?utm_source=chatgpt.com "actions/dependency-review-action"
+[10]: https://docs.github.com/en/actions/reference/security/secure-use?utm_source=chatgpt.com "Secure use reference"
+[11]: https://docs.github.com/actions/security-guides/automatic-token-authentication?utm_source=chatgpt.com "Automatic token authentication"
+[12]: https://docs.github.com/en/actions/how-tos/manage-workflow-runs/approve-runs-from-forks?utm_source=chatgpt.com "Approving workflow runs from forks"
+[13]: https://docs.github.com/actions/creating-actions/sharing-actions-and-workflows-with-your-organization?utm_source=chatgpt.com "Sharing actions and workflows with your organization"
+[14]: https://docs.github.com/enterprise-cloud%40latest/actions/using-jobs/using-concurrency?utm_source=chatgpt.com "Control the concurrency of workflows and jobs"
+[15]: https://docs.github.com/actions/deployment/targeting-different-environments/using-environments-for-deployment?utm_source=chatgpt.com "Managing environments for deployment"
+[16]: https://docs.github.com/code-security/code-scanning/introduction-to-code-scanning/about-code-scanning-with-codeql?utm_source=chatgpt.com "About code scanning with CodeQL"
+[17]: https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/configuring-the-dependency-review-action?utm_source=chatgpt.com "Configuring the dependency review action"
+[18]: https://docs.github.com/en/code-security/dependabot/dependabot-security-updates/about-dependabot-security-updates?utm_source=chatgpt.com "About Dependabot security updates"
+[19]: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuring-dependabot-version-updates?utm_source=chatgpt.com "Configuring Dependabot version updates"
+[20]: https://docs.github.com/en/code-security/secret-scanning/enabling-secret-scanning-features/enabling-push-protection-for-your-repository?utm_source=chatgpt.com "Enabling push protection for your repository"
+[21]: https://docs.github.com/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches?utm_source=chatgpt.com "About protected branches"
+[22]: https://docs.sigstore.dev/quickstart/quickstart-ci/?utm_source=chatgpt.com "Sigstore CI Quickstart"
+[23]: https://docs.github.com/en/code-security/code-scanning/enabling-code-scanning/configuring-default-setup-for-code-scanning?utm_source=chatgpt.com "Configuring default setup for code scanning"
+[24]: https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments?utm_source=chatgpt.com "Deployments and environments"
+[25]: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule?utm_source=chatgpt.com "Managing a branch protection rule"
+[26]: https://docs.github.com/en/enterprise-cloud%40latest/admin/enforcing-policies/enforcing-policies-for-your-enterprise/enforcing-policies-for-github-actions-in-your-enterprise?utm_source=chatgpt.com "Enforcing policies for GitHub Actions in your enterprise"
+[27]: https://docs.github.com/en/code-security/secret-scanning/introduction/about-push-protection?utm_source=chatgpt.com "About push protection"
+[28]: https://github.com/digital-go-jp/jgrants-mcp-server?utm_source=chatgpt.com "digital-go-jp/jgrants-mcp-server"
+
+作業開始前に次のコマンドで作業ディレクトリへ移動してください:
+cd .worktrees/task-1762995981930-dedde4
+
+
+ターミナルで？
+
