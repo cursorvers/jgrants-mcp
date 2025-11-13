@@ -46,6 +46,8 @@ jobs:
       - name: Sign image (keyless)
         env:
           COSIGN_EXPERIMENTAL: "1"
+        continue-on-error: true
+        id: sign
         run: |
           # Retry logic for cosign signing (handles transient TUF errors)
           MAX_RETRIES=3
@@ -75,3 +77,11 @@ jobs:
           # Sign both tags
           sign_image "${{ steps.meta.outputs.IMAGE }}:${{ steps.meta.outputs.TAG }}" || exit 1
           sign_image "${{ steps.meta.outputs.IMAGE }}:latest" || exit 1
+      
+      - name: Check signing status
+        if: steps.sign.outcome == 'failure'
+        run: |
+          echo "⚠️ Container image signing failed, but the image was successfully built and pushed."
+          echo "This may be due to transient issues with Sigstore's TUF metadata service."
+          echo "The image is available at: ${{ steps.meta.outputs.IMAGE }}:${{ steps.meta.outputs.TAG }}"
+          echo "You can manually sign it later or retry the workflow."
