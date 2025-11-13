@@ -26,8 +26,8 @@ pytest tests/test_core.py
 
 ## GitHub Actions について
 - `CI` ワークフロー：`push`/`pull_request` で Python 3.11、`pip` キャッシュ利用、`pytest` を実行。
-- `Security` ワークフロー：CodeQL + Dependency Review を `main` で `push`/`pull_request`/週次スケジュール実行。脆弱性差分は PR で fail-on-severity=high。
-- `Release` ワークフロー：`v*.*.*` タグをトリガに GHCR へ `docker/build-push-action` でイメージ公開、`sigstore/cosign-installer` で keyless 署名。
+- `Security` ワークフロー：CodeQL + Dependency Review を `main` で `push`/`pull_request`/週次スケジュール実行。脆弱性差分は PR で fail-on-severity=high。CodeQL は GitHub Advanced Security が有効でない場合でも警告付きで成功するように設定済み。
+- `Release` ワークフロー：`v*.*.*` タグをトリガに GHCR へ `docker/build-push-action` でイメージ公開、`sigstore/cosign-installer` で keyless 署名。cosign 署名にはリトライロジック（最大3回、5秒間隔）を実装済み。
 - `Nightly backup` ワークフロー（任意）：Supabase などのバックアップや監査ログを UTC 18:00 に取得し `actions/upload-artifact` で 30 日保存。
 
 ## Repository Secrets / Variables
@@ -70,3 +70,11 @@ python3 scripts/check_github_settings.py --repo cursorvers/jgrants-mcp
 - Secret scanning push protection
 
 CI や Settings 変更後にこのコマンドを実行することで、ガードレールが維持されているかを継続的に確認できます。
+
+## 参考ドキュメント
+
+- `docs/github-settings.md`: GitHub 設定の詳細な要件定義
+- `docs/ui-setup-guide.md`: GitHub UI での設定手順
+- `docs/workflow-troubleshooting.md`: ワークフローのトラブルシューティングガイド
+- `docs/github-settings-status.md`: 現在の設定状況とワークフロー実行結果
+- `docs/workflow-improvements.md`: ワークフロー改善履歴
