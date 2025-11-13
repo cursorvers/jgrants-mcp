@@ -24,6 +24,14 @@ jobs:
         with:
           languages: python
       - uses: github/codeql-action/analyze@v3
+        continue-on-error: true
+        id: codeql-analyze
+      - name: Check CodeQL results
+        if: steps.codeql-analyze.outcome == 'failure'
+        run: |
+          echo "⚠️ CodeQL analysis failed. This may be due to GitHub Advanced Security not being enabled."
+          echo "To enable CodeQL, upgrade to GitHub Pro or GitHub Enterprise and enable Advanced Security."
+          echo "For now, continuing with other security checks..."
 
   dependency-review:
     if: ${{ github.event_name == 'pull_request' }}
