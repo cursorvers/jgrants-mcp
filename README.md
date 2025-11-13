@@ -48,3 +48,25 @@ uvicorn jgrants_mcp_server.server:app --host 0.0.0.0 --port 8000
 
 ## GitHub 設定の自動化とチェックリスト
 `docs/github-settings.md` に GitHub Settings 画面での操作と `gh api` を使ったコマンド例を記載しました。Actions の許可リスト・Workflow 権限・フォーク PR 承認・Environment の承認ルール・Branch Protection・Secret Scanning Push Protection を順に構成してください。
+
+### GitHub 設定の検証
+`scripts/check_github_settings.py` を使用して、GitHub リポジトリの設定が要件通りになっているかを自動検証できます。
+
+```bash
+# GitHub トークンを環境変数に設定
+export GITHUB_TOKEN=$(gh auth token)
+
+# または
+export GH_TOKEN=$(gh auth token)
+
+# 検証スクリプトを実行
+python3 scripts/check_github_settings.py --repo cursorvers/jgrants-mcp
+```
+
+このスクリプトは以下を検証します：
+- Actions permissions（許可されたアクションのリスト）
+- Environments（dev, stg, prod の存在）
+- Branch protection（main ブランチの保護ルール）
+- Secret scanning push protection
+
+CI や Settings 変更後にこのコマンドを実行することで、ガードレールが維持されているかを継続的に確認できます。
