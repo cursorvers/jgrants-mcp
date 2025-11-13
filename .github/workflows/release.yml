@@ -47,5 +47,31 @@ jobs:
         env:
           COSIGN_EXPERIMENTAL: "1"
         run: |
-          cosign sign --yes ${{ steps.meta.outputs.IMAGE }}:${{ steps.meta.outputs.TAG }}
-          cosign sign --yes ${{ steps.meta.outputs.IMAGE }}:latest
+          # Retry logic for cosign signing (handles transient TUF errors)
+          MAX_RETRIES=3
+          RETRY_DELAY=5
+          
+          sign_image() {
+            local image=$1
+            local retry_count=0
+            
+            while [ $retry_count -lt $MAX_RETRIES ]; do
+              if cosign sign --yes "$image"; then
+                echo "✅ Successfully signed $image"
+                return 0
+              else
+                retry_count=$((retry_count + 1))
+                if [ $retry_count -lt $MAX_RETRIES ]; then
+                  echo "⚠️ Signing failed, retrying in ${RETRY_DELAY}s (attempt $retry_count/$MAX_RETRIES)..."
+                  sleep $RETRY_DELAY
+                else
+                  echo "❌ Failed to sign $image after $MAX_RETRIES attempts"
+                  return 1
+                fi
+              fi
+            done
+          }
+          
+          # Sign both tags
+          sign_image "${{ steps.meta.outputs.IMAGE }}:${{ steps.meta.outputs.TAG }}" || exit 1
+          sign_image "${{ steps.meta.outputs.IMAGE }}:latest" || exit 1
