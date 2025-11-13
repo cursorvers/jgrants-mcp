@@ -150,3 +150,6 @@ permissions:
   packages: write    # GHCR push job のみ
   id-token: write    # cosign keyless job のみ
 ```
+
+## 補助ツール：GitHub 設定チェック
+`scripts/check_github_settings.py` を実行すれば Proxy なしで GitHub REST API を叩き、上記の Allowlist、Environment、Branch Protection、Secret Scanning が期待値と一致しているかを検証できます。CI や設定変更後に実行することで、不整合の早期検知・対応を自動化してください。
