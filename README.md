@@ -148,11 +148,17 @@ pytest tests/test_core.py
 
 ## 6. Repository Secrets / Variables
 
-| 名前                      | 用途                                                  |
-| ----------------------- | --------------------------------------------------- |
-| `JGRANTS_API_BASE`      | `API_BASE_URL` を README 想定値以外にしたい場合のみ設定             |
-| `SUPABASE_SERVICE_ROLE` | Nightly バックアップなどで使用する場合                             |
-| `GHCR_IMAGE`            | デフォルト `ghcr.io/cursorvers/jgrants-mcp` を上書きしたい場合に利用 |
+**Release ワークフローで必要なシークレット**:
+- 基本的に不要（GHCRへのプッシュは`GITHUB_TOKEN`を使用）
+- `GHCR_IMAGE`変数（オプション）: デフォルトは`ghcr.io/cursorvers/jgrants-mcp`
+
+**Nightly backup ワークフローで必要なシークレット**（オプション）:
+- `SUPABASE_SERVICE_ROLE`: Supabaseを使用する場合のみ
+
+| 名前                      | 用途                                                  | 必須/オプション |
+| ----------------------- | --------------------------------------------------- | ----------- |
+| `GHCR_IMAGE` (Variable) | GHCRイメージ名（デフォルト `ghcr.io/cursorvers/jgrants-mcp` を上書きしたい場合） | オプション      |
+| `SUPABASE_SERVICE_ROLE` (Secret) | Nightly バックアップなどで使用する場合                             | オプション      |
 
 署名は `cosign` の keyless モード（OIDC）を利用するため追加鍵は不要ですが、
 `Release` ワークフローには `id-token: write` 権限を付与してください。

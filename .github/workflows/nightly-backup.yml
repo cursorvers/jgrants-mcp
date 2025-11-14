@@ -1,0 +1,26 @@
+name: Nightly backup
+on:
+  schedule:
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  archive-logs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+
+      - name: Prepare backup metadata
+        run: |
+          mkdir -p artifacts
+          echo "backup run ${{ github.run_id }} ($(date -u))" > artifacts/backup-${{ github.run_id }}.txt
+
+      - name: Upload archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nightly-backup-${{ github.run_id }}
+          path: artifacts/*.txt
+          retention-days: 30

@@ -45,11 +45,14 @@
 ## 4. Environments
 | 環境 | 用途 | ルール |
 | --- | --- | --- |
-| `dev` | 開発用（任意デプロイ） | 制限なし |
-| `stg` | ステージング | Required reviewers: 1、Wait timer: 10 分 |
-| `prod` | 本番 | Required reviewers: 2（自己承認禁止）、Allow admin bypass OFF、Deploy branches: `main` のみ |
+| `prod` | 本番（Release ワークフロー用） | Required reviewers: 2（自己承認禁止）、Allow admin bypass OFF、Deploy branches: `main` のみ |
 
-`Release` workflow の `environment: prod` ジョブは手動承認を待ち、自己承認禁止 & 2 名以上の承認を満たす必要があります。必要なら「Prevent self-approval」オプションも有効化。
+**注意**: このプロジェクトはAWSへのデプロイは行いません。GHCRへのコンテナプッシュとCosign署名が主な目的です。
+
+`Release` workflow の `environment: prod` ジョブは手動承認を待ち、自己承認禁止 & 2 名以上の承認を満たす必要があります。「Prevent self-approval」オプションも有効化してください。
+
+**オプション環境**:
+- `stg`: 将来的にステージング環境が必要な場合のみ作成（Required reviewers: 1、Wait timer: 10 分）
 
 ## 5. Code security and analysis
 - **CodeQL**：Enable（Default Setup も OK）
@@ -63,12 +66,18 @@
 - Require branches to be up to date before merging（厳格モード）
 
 ## 7. Secrets & Variables
-| 名前 | 用途 |
-| --- | --- |
-| `JGRANTS_API_BASE` | README に書かれた `API_BASE_URL`（デフォルト https://api.jgrants-portal.go.jp/exp/v1/public）
-| `JGRANTS_FILES_DIR` | 任意でファイル保存先を変更する場合に設定
-| `SUPABASE_SERVICE_ROLE` | supabase によるバックアップやエクスポートで使う（任意）
-| `GHCR_IMAGE` | 例：`ghcr.io/cursorvers/jgrants-mcp`（タグ化用）
+
+**Release ワークフローで必要なシークレット**:
+- 基本的に不要（GHCRへのプッシュは`GITHUB_TOKEN`を使用）
+- `GHCR_IMAGE`変数（オプション）: デフォルトは`ghcr.io/cursorvers/jgrants-mcp`
+
+**Nightly backup ワークフローで必要なシークレット**（オプション）:
+- `SUPABASE_SERVICE_ROLE`: Supabaseを使用する場合のみ
+
+| 名前 | 用途 | 必須/オプション |
+| --- | --- | --- |
+| `GHCR_IMAGE` (Variable) | GHCRイメージ名（例：`ghcr.io/cursorvers/jgrants-mcp`） | オプション（デフォルト値あり） |
+| `SUPABASE_SERVICE_ROLE` (Secret) | Supabaseによるバックアップやエクスポートで使用 | オプション（Nightly backupを使用する場合のみ） |
 
 **署名について**：`cosign keyless`（OIDC）を使うためシークレットキー不要。`Release` workflow には `permissions: id-token: write` を設定し、GH が発行する OIDC トークンを使って署名。
 
@@ -107,10 +116,10 @@
    - Fork PR workflows：Require approval for first-time contributors
    - Artifact & log retention：30 日
    - Reusable workflows access：必要なら組織内に限定
-2. **Settings → Environments**：`dev`, `stg`, `prod` を作成し、`stg` で Wait timer 10 分、`prod` で Required reviewers 2（自己承認禁止）、Allow admin bypass OFF。
+2. **Settings → Environments**：`prod` を作成し、Required reviewers 2（自己承認禁止）、Allow admin bypass OFF、Deploy branches: `main` のみを設定。`stg` は将来的に必要な場合のみ作成。
 3. **Settings → Code security and analysis**：CodeQL、Dependency Review、Dependabot、Secret Scanning Push Protection を有効化。
 4. **Settings → Branches**：`main` に保護ルール（PR・ステータスチェック・最新化要求）。
-5. **Secrets**：必要な Secrets / Variables を追加（`JGRANTS_API_BASE`, `GHCR_IMAGE`, `SUPABASE_SERVICE_ROLE` など）。
+5. **Secrets**：必要な Secrets / Variables を追加（`GHCR_IMAGE`（オプション）、`SUPABASE_SERVICE_ROLE`（Nightly backup使用時のみ））。
 6. 実行後は `gh api /repos/cursorvers/jgrants-mcp/actions/permissions` などで現在の設定値を取得し記録。
 
 ## 10. 運用KPI
