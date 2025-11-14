@@ -1,0 +1,5 @@
+ORIGINAL_DIR=$(pwd)
+cd apps/bff && npm run dev >/tmp/kamui-bff-dev.log 2>&1 &
+BFF_PID=$!
+cd "$ORIGINAL_DIR"
+printf "%s" "$BFF_PID" > .kamui/dev.pid

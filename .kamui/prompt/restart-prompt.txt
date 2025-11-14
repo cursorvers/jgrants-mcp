@@ -1,0 +1,12 @@
+if [ -f .kamui/dev.pid ]; then
+  DEV_PID=$(cat .kamui/dev.pid)
+  if ps -p "$DEV_PID" >/dev/null 2>&1; then
+    kill "$DEV_PID"
+  fi
+  rm -f .kamui/dev.pid
+fi
+ORIGINAL_DIR=$(pwd)
+cd apps/bff && npm run dev >/tmp/kamui-bff-dev.log 2>&1 &
+BFF_PID=$!
+cd "$ORIGINAL_DIR"
+printf "%s" "$BFF_PID" > .kamui/dev.pid

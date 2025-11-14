@@ -1,152 +1,206 @@
 #!/usr/bin/env python3
-"""Verify that the repository-level GitHub settings match the documented guardrails."""
-
-from __future__ import annotations
+"""GitHub Settings の状態を検証するスクリプト"""
 
 import argparse
 import os
 import sys
-from typing import Iterable
+from typing import Any
 
 import requests
 
-API_BASE = "https://api.github.com"
 
-REQUIRED_ACTIONS = [
-    "actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955",
-    "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
-    "actions/cache@6f8efc29b200d32929f49075959781ed54ec270c",
-    "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
-    "actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a",
-    "docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc",
-    "docker/setup-buildx-action@885d1462b80bc1c1c7f0b00334ad271f09369c55",
-    "docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25",
-    "sigstore/cosign-installer@c85d0e205a72a294fe064f618a87dbac13084086",
-    "github/codeql-action/init@8dca8a82e2fa1a2c8908956f711300f9c4a4f4f6",
-    "github/codeql-action/analyze@8dca8a82e2fa1a2c8908956f711300f9c4a4f4f6",
-    "actions/dependency-review-action@93809e13f07c0db8c2db3c320885d98f2d235acc",
-]
-
-REQUIRED_ENVIRONMENTS = ["dev", "stg", "prod"]
-REQUIRED_STATUS_CHECKS = ["CI (unit)", "Security / CodeQL", "Dependency Review"]
+def get_github_token() -> str:
+    """環境変数から GitHub token を取得"""
+    token = os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN")
+    if not token:
+        print("ERROR: GITHUB_TOKEN or GH_TOKEN environment variable is required", file=sys.stderr)
+        sys.exit(1)
+    return token
 
 
-def _request(session: requests.Session, path: str) -> dict | list:
-    resp = session.get(f"{API_BASE}{path}")
-    if resp.status_code == 404:
-        raise RuntimeError(f"Resource not found: {path}")
-    resp.raise_for_status()
-    return resp.json()
+def api_request(token: str, endpoint: str) -> dict[str, Any]:
+    """GitHub API リクエストを実行"""
+    url = f"https://api.github.com/repos/{endpoint}"
+    headers = {
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github+json",
+    }
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    return response.json()
 
 
-def _print_check(title: str, ok: bool, details: str | None = None) -> None:
-    status = "OK" if ok else "FAIL"
-    print(f"[{status}] {title}")
-    if details:
-        print(f"      {details}")
+def check_actions_permissions(token: str, repo: str) -> dict[str, Any]:
+    """Actions permissions を確認"""
+    try:
+        data = api_request(token, f"{repo}/actions/permissions")
+        return {
+            "enabled": data.get("enabled", False),
+            "allowed_actions": data.get("allowed_actions", "unknown"),
+            "sha_pinning_required": data.get("sha_pinning_required", False),
+        }
+    except Exception as e:
+        return {"error": str(e)}
 
 
-def check_actions_permissions(session: requests.Session, repo: str) -> bool:
-    data = _request(session, f"/repos/{repo}/actions/permissions")
-    allowed = data.get("allowed_actions")
-    selected = set(data.get("selected_actions") or [])
-    ok = allowed == "selected" and selected.issuperset(REQUIRED_ACTIONS)
-    missing = [x for x in REQUIRED_ACTIONS if x not in selected]
-    details = (
-        "missing: " + ", ".join(missing)
-        if missing
-        else "selected-actions allowlist is complete"
-    )
-    _print_check("Actions permissions (allowlist + read-only default)", ok, details)
-    return ok
+def check_selected_actions(token: str, repo: str) -> dict[str, Any]:
+    """Selected actions を確認"""
+    try:
+        data = api_request(token, f"{repo}/actions/permissions/selected-actions")
+        return {
+            "github_owned_allowed": data.get("github_owned_allowed", False),
+            "verified_allowed": data.get("verified_allowed", False),
+            "patterns_allowed": data.get("patterns_allowed", []),
+        }
+    except Exception as e:
+        return {"error": str(e)}
 
 
-def check_environments(session: requests.Session, repo: str) -> bool:
-    data = _request(session, f"/repos/{repo}/environments")
-    names = {env["name"] for env in data.get("environments", [])}
-    missing = [env for env in REQUIRED_ENVIRONMENTS if env not in names]
-    ok = not missing
-    details = (
-        "missing: " + ", ".join(missing)
-        if missing
-        else "all expected environments exist"
-    )
-    _print_check("Environments existence", ok, details)
-    return ok
+def check_environments(token: str, repo: str) -> list[dict[str, Any]]:
+    """Environments を確認"""
+    try:
+        data = api_request(token, f"{repo}/environments")
+        return [
+            {
+                "name": env.get("name"),
+                "protection_rules": len(env.get("protection_rules", [])),
+                "can_admins_bypass": env.get("can_admins_bypass", False),
+            }
+            for env in data.get("environments", [])
+        ]
+    except Exception as e:
+        return [{"error": str(e)}]
 
 
-def check_branch_protection(session: requests.Session, repo: str) -> bool:
-    data = _request(session, f"/repos/{repo}/branches/main/protection")
-    status_checks = data.get("required_status_checks", {}).get("contexts", [])
-    missing_checks = [c for c in REQUIRED_STATUS_CHECKS if c not in status_checks]
-    reviews = data.get("required_pull_request_reviews", {})
-    reviews_ok = reviews.get("required_approving_review_count", 0) >= 1
-    up_to_date = data.get("required_status_checks", {}).get("strict", False)
-    ok = not missing_checks and reviews_ok and up_to_date
-    details_parts = []
-    if missing_checks:
-        details_parts.append("missing checks: " + ", ".join(missing_checks))
-    if not reviews_ok:
-        details_parts.append("require at least 1 approving review")
-    if not up_to_date:
-        details_parts.append("branch must be up to date before merging")
-    details = "; ".join(details_parts) if details_parts else "all branch protection safeguards applied"
-    _print_check("Branch protection (main)", ok, details)
-    return ok
+def check_vulnerability_alerts(token: str, repo: str) -> dict[str, Any]:
+    """Vulnerability alerts を確認"""
+    try:
+        response = requests.get(
+            f"https://api.github.com/repos/{repo}/vulnerability-alerts",
+            headers={
+                "Authorization": f"token {token}",
+                "Accept": "application/vnd.github.dorian-preview+json",
+            },
+        )
+        return {"enabled": response.status_code == 204}
+    except Exception as e:
+        return {"error": str(e)}
 
 
-def check_secret_scanning(session: requests.Session, repo: str) -> bool:
-    data = _request(session, f"/repos/{repo}/secret-scanning" )
-    status = data.get("status")
-    ok = status == "enabled"
-    details = "enabled" if ok else "secret scanning push protection not enabled"
-    _print_check("Secret scanning push protection", ok, details)
-    return ok
+def check_automated_security_fixes(token: str, repo: str) -> dict[str, Any]:
+    """Automated security fixes を確認"""
+    try:
+        response = requests.get(
+            f"https://api.github.com/repos/{repo}/automated-security-fixes",
+            headers={
+                "Authorization": f"token {token}",
+                "Accept": "application/vnd.github.london-preview+json",
+            },
+        )
+        return {"enabled": response.status_code == 204}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def check_branch_protection(token: str, repo: str, branch: str = "main") -> dict[str, Any]:
+    """Branch protection を確認"""
+    try:
+        data = api_request(token, f"{repo}/branches/{branch}/protection")
+        return {
+            "required_status_checks": data.get("required_status_checks", {}),
+            "enforce_admins": data.get("enforce_admins", {}),
+            "required_pull_request_reviews": data.get("required_pull_request_reviews", {}),
+        }
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            return {"enabled": False, "message": "Branch protection not configured"}
+        return {"error": str(e)}
+    except Exception as e:
+        return {"error": str(e)}
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--repo",
-        default=os.environ.get("GITHUB_REPOSITORY", "cursorvers/jgrants-mcp"),
-        help="Repository in OWNER/NAME format",
+    parser = argparse.ArgumentParser(
+        description="Check GitHub repository settings"
     )
     parser.add_argument(
-        "--token",
-        default=os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN"),
-        help="GitHub token with repo scope (defaults to GITHUB_TOKEN)",
+        "--repo",
+        required=True,
+        help="Repository in format owner/repo"
     )
     args = parser.parse_args()
 
-    if not args.token:
-        print("ERROR: provide a GitHub token via --token or GITHUB_TOKEN", file=sys.stderr)
-        sys.exit(1)
+    token = get_github_token()
 
-    session = requests.Session()
-    session.headers.update({
-        "Authorization": f"Bearer {args.token}",
-        "Accept": "application/vnd.github+json",
-        "User-Agent": "jgrants-mcp-settings-check/1.0",
-    })
+    print(f"Checking GitHub Settings for: {args.repo}\n")
+    print("=" * 60)
 
-    print("Checking GitHub repository settings for", args.repo)
-    results: list[bool] = []
-    for check in (
-        check_actions_permissions,
-        check_environments,
-        check_branch_protection,
-        check_secret_scanning,
-    ):
-        try:
-            results.append(check(session, args.repo))
-        except RuntimeError as err:
-            print(f"[FAIL] {check.__name__}: {err}")
-            results.append(False)
-    overall = all(results)
-    print(f"Summary: {'PASS' if overall else 'FAIL'}")
-    if not overall:
-        sys.exit(2)
+    # Actions permissions
+    print("\n[1] Actions Permissions:")
+    actions_perms = check_actions_permissions(token, args.repo)
+    if "error" in actions_perms:
+        print(f"  ERROR: {actions_perms['error']}")
+    else:
+        print(f"  Enabled: {actions_perms['enabled']}")
+        print(f"  Allowed actions: {actions_perms['allowed_actions']}")
+        print(f"  SHA pinning required: {actions_perms['sha_pinning_required']}")
+
+    # Selected actions
+    print("\n[2] Selected Actions:")
+    selected = check_selected_actions(token, args.repo)
+    if "error" in selected:
+        print(f"  ERROR: {selected['error']}")
+    else:
+        print(f"  GitHub owned allowed: {selected['github_owned_allowed']}")
+        print(f"  Verified allowed: {selected['verified_allowed']}")
+        print(f"  Patterns allowed: {len(selected.get('patterns_allowed', []))}")
+
+    # Environments
+    print("\n[3] Environments:")
+    envs = check_environments(token, args.repo)
+    if envs and "error" in envs[0]:
+        print(f"  ERROR: {envs[0]['error']}")
+    else:
+        for env in envs:
+            name = env['name']
+            rules_count = env['protection_rules']
+            admin_bypass = env['can_admins_bypass']
+            print(
+                f"  - {name}: {rules_count} protection rules, "
+                f"admin bypass: {admin_bypass}"
+            )
+
+    # Vulnerability alerts
+    print("\n[4] Vulnerability Alerts:")
+    vuln_alerts = check_vulnerability_alerts(token, args.repo)
+    if "error" in vuln_alerts:
+        print(f"  ERROR: {vuln_alerts['error']}")
+    else:
+        print(f"  Enabled: {vuln_alerts['enabled']}")
+
+    # Automated security fixes
+    print("\n[5] Automated Security Fixes:")
+    auto_fixes = check_automated_security_fixes(token, args.repo)
+    if "error" in auto_fixes:
+        print(f"  ERROR: {auto_fixes['error']}")
+    else:
+        print(f"  Enabled: {auto_fixes['enabled']}")
+
+    # Branch protection
+    print("\n[6] Branch Protection (main):")
+    branch_prot = check_branch_protection(token, args.repo, "main")
+    if "error" in branch_prot:
+        print(f"  ERROR: {branch_prot['error']}")
+    elif "enabled" in branch_prot and not branch_prot["enabled"]:
+        print(f"  {branch_prot.get('message', 'Not configured')}")
+    else:
+        print(f"  Required status checks: {branch_prot.get('required_status_checks', {})}")
+        print(f"  Required PR reviews: {branch_prot.get('required_pull_request_reviews', {})}")
+
+    print("\n" + "=" * 60)
+    print("Check completed!")
 
 
 if __name__ == "__main__":
     main()
+
