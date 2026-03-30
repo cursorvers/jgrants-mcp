@@ -41,7 +41,7 @@ jobs:
           tags: ${{ steps.meta.outputs.IMAGE }}:${{ steps.meta.outputs.TAG }},${{ steps.meta.outputs.IMAGE }}:latest
 
       - name: Install cosign
-        uses: sigstore/cosign-installer@c85d0e205a72a294fe064f618a87dbac13084086
+        uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003
 
       - name: Sign image (keyless)
         env:
